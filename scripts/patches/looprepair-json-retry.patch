@@ -1,0 +1,183 @@
+--- a/src/looprepair/LLMRepair.py
++++ b/src/looprepair/LLMRepair.py
+@@ -7,6 +7,7 @@
+ from tree_sitter import Language, Parser
+ import tempfile
+ import subprocess
++import time
+ from json_repair import repair_json
+ 
+ openai.api_key = os.environ.get("LOOPREPAIR_API_KEY", "")
+@@ -82,36 +83,106 @@
+ 		return None
+ 
+ 
+-def patch_generation(
+-		question
++# Strict json_schema is enforced by OpenAI but not by every OpenRouter provider: deepseek sometimes
++# answers under another key or with an empty reply, and one such reply used to abort the whole bug.
++# Ask again rather than lose every candidate, and accept a lone renamed field.
++JSON_REPLY_ATTEMPTS = 3
++# deepseek's other failure mode is `{` followed by whitespace up to the provider's length cap, 25-90
++# minutes a reply over OpenRouter and 16h of one 25-bug run. Streaming lets such a reply be cut as
++# soon as it starts: inside a JSON string newlines and tabs arrive escaped, so no real reply has a
++# run of raw whitespace anywhere near this long.
++WHITESPACE_RUN_LIMIT = 200
++# Backstop for a stall that streams no content at all (one reply came back empty after 43 minutes).
++REPLY_TIME_LIMIT_S = 900
++# OpenRouter's provider routing as JSON, e.g. {"sort": "throughput", "require_parameters": true}.
++# Unset leaves routing to OpenRouter, which also picks providers that ignore json_schema; OpenAI's
++# own endpoint rejects the field, so it must stay unset for a model served there.
++PROVIDER_ROUTING = json.loads(os.environ.get("LOOPREPAIR_PROVIDER") or "null")
++
++
++def stream_reply(
++		question,
++		response_format
+ ):
++	stream = client.chat.completions.create(
++		model=api_model,
++		messages=[
++			{ "role": "system", "content": "You are now playing the role of a vulnerability repair expert." },
++			{ "role": "user", "content": question },
++		],
++		response_format=response_format,
++		stream=True,
++		extra_body={ "provider": PROVIDER_ROUTING } if PROVIDER_ROUTING else None
++	)
++	started = time.monotonic()
++	parts, whitespace_run = [], 0
+ 	try:
+-		response = client.chat.completions.create(
+-			model=api_model,
+-			messages=[
+-				{ "role": "system", "content": "You are now playing the role of a vulnerability repair expert." },
+-				{ "role": "user", "content": question },
+-			],
++		for chunk in stream:
++			delta = chunk.choices[0].delta.content if chunk.choices else None
++			if delta:
++				parts.append(delta)
++				stripped = delta.rstrip()
++				whitespace_run = whitespace_run + len(delta) if not stripped else len(delta) - len(stripped)
++				if whitespace_run > WHITESPACE_RUN_LIMIT:
++					return "".join(parts), f"cut after a {whitespace_run}-char whitespace run"
++			if time.monotonic() - started > REPLY_TIME_LIMIT_S:
++				return "".join(parts), f"cut at the {REPLY_TIME_LIMIT_S}s reply limit"
++	finally:
++		stream.close()
++	return "".join(parts), None
++
++
++def parse_json_reply(
++		text
++):
++	try:
++		return json.loads(repair_json(text)) if text else None
++	except ValueError:
++		return None
++
++
++def ask_json(
++		question,
++		schema_name,
++		field
++):
++	for attempt in range(JSON_REPLY_ATTEMPTS):
++		text, cut = stream_reply(
++			question,
+ 			response_format={
+ 				"type":        "json_schema",
+ 				"json_schema": {
+-					"name":   "patch_function_generation",
++					"name":   schema_name,
+ 					"schema": {
+ 						"type":                 "object",
+ 						"properties":           {
+-							"patch_function":    { "type": "string" },
++							field:         { "type": "string" },
+ 							"explanation": { "type": "string" }
+ 						},
+-						"required":             ["patch_function", "explanation"],
++						"required":             [field, "explanation"],
+ 						"additionalProperties": False
+ 					},
+ 					"strict": True
+ 				}
+ 			}
+ 		)
+-		text = response.choices[0].message.content
+-		json_result = json.loads(repair_json(text))
+-		return json_result['patch_function']
++		json_result = None if cut else parse_json_reply(text)
++		if isinstance(json_result, dict):
++			if isinstance(json_result.get(field), str):
++				return json_result[field]
++			others = [v for k, v in json_result.items() if k != "explanation" and isinstance(v, str)]
++			if len(others) == 1:
++				return others[0]
++		logger.warning(f"attempt {attempt + 1}/{JSON_REPLY_ATTEMPTS}: no '{field}' in the LLM reply"
++					   f"{f' ({cut})' if cut else ''}: {text!r:.300}")
++	raise ValueError(f"no '{field}' in {JSON_REPLY_ATTEMPTS} LLM replies")
++
++
++def patch_generation(
++		question
++):
++	try:
++		return ask_json(question, "patch_function_generation", "patch_function")
+ 	except Exception as e:
+ 		logger.error(f"The LLM returned an error. Error: {e}. Prompt:{question}")
+ 
+@@ -157,32 +228,7 @@
+ 		function, number, line
+ ):
+ 	def ask_llm(question):
+-		response = client.chat.completions.create(
+-			model=api_model,
+-			messages=[
+-				{ "role": "system", "content": "You are now playing the role of a vulnerability repair expert." },
+-				{ "role": "user", "content": question },
+-			],
+-			response_format={
+-				"type":        "json_schema",
+-				"json_schema": {
+-					"name":   "repair_sequence_generation",
+-					"schema": {
+-						"type":                 "object",
+-						"properties":           {
+-							"sequence":    { "type": "string" },
+-							"explanation": { "type": "string" }
+-						},
+-						"required":             ["sequence", "explanation"],
+-						"additionalProperties": False
+-					},
+-					"strict": True
+-				}
+-			}
+-		)
+-		text = response.choices[0].message.content
+-		json_result = json.loads(repair_json(text))
+-		return json_result['sequence']
++		return ask_json(question, "repair_sequence_generation", "sequence")
+ 	sequence_generate_prompt = predict_sequence.format(
+ 		function=function,
+ 		number= str(number),
+@@ -259,6 +305,8 @@
+ 			)
+ 			for _ in range(5):
+ 				patch_function = patch_generation(prompt)
++				if patch_function is None:
++					continue
+ 				diff = generate_candidates(
+ 					patch_function,
+ 					vulnerable_file_path,
+@@ -307,6 +355,8 @@
+ 			)
+ 			for _ in range(5):
+ 				patch_function = patch_generation(prompt)
++				if patch_function is None:
++					continue
+ 				diff = generate_candidates(
+ 					patch_function,
+ 					vulnerable_file_path,

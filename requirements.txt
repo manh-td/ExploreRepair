@@ -1,0 +1,28 @@
+# The agent loop, model clients and task harness
+openai==2.48.0
+httpx==0.28.1
+python-dotenv==1.2.2
+pyyaml==6.0.3
+
+# Code knowledge graph: parsing, embedding, vector store
+tree-sitter==0.26.0
+tree-sitter-python==0.25.0
+tree-sitter-javascript==0.25.0
+tree-sitter-go==0.25.0
+tree-sitter-c==0.24.2
+sentence-transformers==5.7.0
+chromadb==1.5.9
+huggingface_hub==1.24.0
+
+# Baselines: Codex, IntentFix, EvoRepair's upstream runner
+openai-codex==0.157.1
+mcp==1.28.1
+anthropic==0.119.0
+litellm==1.93.0
+mini-swe-agent==2.4.6
+jsonlines==4.0.0
+
+# Analysis notebooks
+matplotlib==3.11.0
+matplotlib-venn==1.1.2
+jupyter

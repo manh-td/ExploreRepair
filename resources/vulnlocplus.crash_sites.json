@@ -1,0 +1,207 @@
+{
+  "CVE-2017-6965": {
+    "file_path": "binutils/elfcomm.c",
+    "line": 75,
+    "source": "crash-tag",
+    "raw": "asan;0;binutils/elfcomm.c:75"
+  },
+  "CVE-2017-14745": {
+    "file_path": "bfd/elf64-x86-64.c",
+    "line": 6632,
+    "source": "crash-tag",
+    "raw": "asan;0;bfd/elf64-x86-64.c:6632"
+  },
+  "CVE-2017-15025": {
+    "file_path": "bfd/dwarf2.c",
+    "line": 2444,
+    "source": "crash-tag",
+    "raw": "assert;dwarf2.c:2444"
+  },
+  "gnubug-19784": {
+    "file_path": "src/make-prime-list.c",
+    "line": 214,
+    "source": "crash-tag",
+    "raw": "asan;0;src/make-prime-list.c:214"
+  },
+  "CVE-2016-8691": {
+    "file_path": "src/libjasper/jpc/jpc_dec.c",
+    "line": 1194,
+    "source": "crash-tag",
+    "raw": "assert;jpc_dec.c:1194"
+  },
+  "CVE-2016-9557": {
+    "file_path": "src/libjasper/base/jas_image.c",
+    "line": 162,
+    "source": "crash-tag",
+    "raw": "assert;jas_image.c:162"
+  },
+  "REDTEAM-CVE-2020-27828": {
+    "file_path": null,
+    "line": null,
+    "source": "none"
+  },
+  "CVE-2012-2806": {
+    "file_path": "jdmarker.c",
+    "line": 327,
+    "source": "crash-tag",
+    "raw": "asan;0;src/jdmarker.c:327"
+  },
+  "CVE-2017-15232": {
+    "file_path": "jquant1.c",
+    "line": 536,
+    "source": "crash-tag",
+    "raw": "asan;0;src/jquant1.c:536"
+  },
+  "CVE-2016-9264": {
+    "file_path": "util/listmp3.c",
+    "line": 128,
+    "source": "crash-tag",
+    "raw": "asan;0;util/listmp3.c:128"
+  },
+  "CVE-2018-8806": {
+    "file_path": "util/decompile.c",
+    "line": 349,
+    "source": "crash-tag",
+    "raw": "asan;0;util/decompile.c:349"
+  },
+  "CVE-2018-8964": {
+    "file_path": "util/decompile.c",
+    "line": 398,
+    "source": "crash-tag",
+    "raw": "asan;0;util/decompile.c:398"
+  },
+  "bugzilla-2633": {
+    "file_path": "tools/tiff2ps.c",
+    "line": 2470,
+    "source": "crash-tag",
+    "raw": "asan;0;tools/tiff2ps.c:2470"
+  },
+  "bugzilla-2611": {
+    "file_path": "libtiff/tif_ojpeg.c",
+    "line": 816,
+    "source": "crash-tag",
+    "raw": "assert;tif_ojpeg.c:816"
+  },
+  "CVE-2016-10092": {
+    "file_path": "libtiff/tif_unix.c",
+    "line": 340,
+    "source": "crash-tag",
+    "raw": "asan;libtiff/tif_unix.c:340"
+  },
+  "CVE-2016-10272": {
+    "file_path": "libtiff/tif_next.c",
+    "line": 64,
+    "source": "crash-tag",
+    "raw": "asan;0;libtiff/tif_next.c:64"
+  },
+  "CVE-2016-3186": {
+    "file_path": "tools/gif2tiff.c",
+    "line": 355,
+    "source": "crash-tag",
+    "raw": "assert;gif2tiff.c:355"
+  },
+  "CVE-2016-5321": {
+    "file_path": "tools/tiffcrop.c",
+    "line": 994,
+    "source": "crash-tag",
+    "raw": "asan;0;tools/tiffcrop.c:994"
+  },
+  "CVE-2016-9532": {
+    "file_path": "tools/tiffcrop.c",
+    "line": 1168,
+    "source": "crash-tag",
+    "raw": "asan;0;tools/tiffcrop.c:1168"
+  },
+  "CVE-2017-5225": {
+    "file_path": "tools/tiffcp.c",
+    "line": 1090,
+    "source": "crash-tag",
+    "raw": "asan;0;tools/tiffcp.c:1090"
+  },
+  "CVE-2017-7595": {
+    "file_path": "libtiff/tif_jpeg.c",
+    "line": 1685,
+    "source": "crash-tag",
+    "raw": "assert;tif_jpeg.c:1685"
+  },
+  "CVE-2017-7599": {
+    "file_path": "libtiff/tif_dirwrite.c",
+    "line": 980,
+    "source": "crash-tag",
+    "raw": "assert;tif_dirwrite.c:980"
+  },
+  "CVE-2017-7600": {
+    "file_path": "libtiff/tif_dirwrite.c",
+    "line": 994,
+    "source": "crash-tag",
+    "raw": "assert;tif_dirwrite.c:994"
+  },
+  "REDTEAM-CVE-2018-18557": {
+    "file_path": null,
+    "line": null,
+    "source": "none"
+  },
+  "REDTEAM-CVE-2022-4645": {
+    "file_path": null,
+    "line": null,
+    "source": "none"
+  },
+  "REDTEAM-CVE-2022-48281": {
+    "file_path": null,
+    "line": null,
+    "source": "none"
+  },
+  "CVE-2012-5134": {
+    "file_path": "parser.c",
+    "line": 4079,
+    "source": "crash-tag",
+    "raw": "asan;0;src/parser.c:4079"
+  },
+  "CVE-2016-1838": {
+    "file_path": "parser.c",
+    "line": 9837,
+    "source": "crash-tag",
+    "raw": "asan;0;src/parser.c:9837"
+  },
+  "CVE-2016-1839": {
+    "file_path": "dict.c",
+    "line": 285,
+    "source": "crash-tag",
+    "raw": "asan;1;src/dict.c:285"
+  },
+  "CVE-2017-5969": {
+    "file_path": "valid.c",
+    "line": 1181,
+    "source": "crash-tag",
+    "raw": "asan;0;src/valid.c:1181"
+  },
+  "REDTEAM-CVE-2016-1833": {
+    "file_path": null,
+    "line": null,
+    "source": "none"
+  },
+  "CVE-2013-7437": {
+    "file_path": "src/bitmap_io.c",
+    "line": 615,
+    "source": "crash-tag",
+    "raw": "asan;0;src/bitmap_io.c:615"
+  },
+  "CVE-2017-5974": {
+    "file_path": "zzip/memdisk.c",
+    "line": 1970,
+    "source": "crash-tag",
+    "raw": "asan;0;zzip/memdisk.c:1970"
+  },
+  "CVE-2017-5975": {
+    "file_path": "zzip/memdisk.c",
+    "line": 1925,
+    "source": "crash-tag",
+    "raw": "asan;0;zzip/memdisk.c:1925"
+  },
+  "CVE-2017-5976": {
+    "file_path": "zzip/memdisk.c",
+    "line": 1979,
+    "source": "crash-tag",
+    "raw": "asan;0;zzip/memdisk.c:1979"
+  }
+}

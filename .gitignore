@@ -1,0 +1,11 @@
+__pycache__/
+.venv/
+.env
+
+# Fetched or built locally by scripts/
+/benchmarks/
+/baselines/
+models/
+repos/
+workspace/
+checkpoints/
